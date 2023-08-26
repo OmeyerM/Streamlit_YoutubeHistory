@@ -21,7 +21,7 @@ from wordcloud import WordCloud
 
 
 # Ustawienie lokalizacji na polską
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+#locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 # Odczytaj zbiory danych z plików JSON
 with open('youtube_records.json', 'r', encoding='utf-8') as file:
