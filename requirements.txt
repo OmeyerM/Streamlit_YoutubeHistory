@@ -1,0 +1,9 @@
+streamlit
+locale
+json
+datetime
+matplotlib.pyplot
+pandas
+nltk
+wordcloud
+collections
