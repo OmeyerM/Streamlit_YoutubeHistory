@@ -2,7 +2,7 @@ streamlit
 locale
 json
 datetime
-matplotlib.pyplot
+matplotlib
 pandas
 nltk
 wordcloud
