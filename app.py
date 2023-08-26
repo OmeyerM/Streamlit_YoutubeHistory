@@ -21,7 +21,7 @@ from wordcloud import WordCloud
 
 
 # Ustawienie lokalizacji na polską
-locale.setlocale(locale.LC_ALL, 'pl_PL.UTF-8')
+locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 # Odczytaj zbiory danych z plików JSON
 with open('youtube_records.json', 'r', encoding='utf-8') as file:
@@ -76,7 +76,8 @@ def update_day_of_week_plot(filter_month_name):
 
     data = pd.DataFrame({'Dzień tygodnia': days_of_week, 'Ilość filmów': view_counts})
 
-    order = ['poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota', 'niedziela']
+    #order = ['poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota', 'niedziela']
+    order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
     data['Dzień tygodnia'] = pd.Categorical(data['Dzień tygodnia'], categories=order, ordered=True)
 
