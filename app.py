@@ -17,7 +17,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from wordcloud import WordCloud
-#import nltk
+import nltk
 
 
 # Ustawienie lokalizacji na polską
@@ -208,6 +208,7 @@ def word_cloud():
     cleaned_titles = [title.lstrip('Watched').strip() for title in titles]
 
     # Tokenizacja, lematyzacja i usuwanie stopwords
+    nltk.download('stopwords')
     lemmatizer = WordNetLemmatizer()
     stop_words = set(stopwords.words('english'))
 
