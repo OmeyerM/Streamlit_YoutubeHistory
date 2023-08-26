@@ -1,5 +1,4 @@
 streamlit
-locale
 json
 datetime
 matplotlib
