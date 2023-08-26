@@ -19,6 +19,10 @@ from nltk.stem import WordNetLemmatizer
 from wordcloud import WordCloud
 import nltk
 
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('stopwords')
+
 
 # Ustawienie lokalizacji na polską
 #locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
@@ -202,10 +206,6 @@ def top_channels_plot():
 
 #wykres 6
 def word_cloud():
-    nltk.download('punkt')
-    nltk.download('wordnet')
-    nltk.download('stopwords')
-    
     # Wyciąganie tytułów
     titles = [item['title'] for item in youtube_records]
 
