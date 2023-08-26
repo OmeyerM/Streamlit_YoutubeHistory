@@ -203,13 +203,15 @@ def top_channels_plot():
 #wykres 6
 def word_cloud():
     nltk.download('punkt')
+    nltk.download('wordnet')
+    nltk.download('stopwords')
+    
     # Wyciąganie tytułów
     titles = [item['title'] for item in youtube_records]
 
     cleaned_titles = [title.lstrip('Watched').strip() for title in titles]
 
     # Tokenizacja, lematyzacja i usuwanie stopwords
-    nltk.download('stopwords')
     lemmatizer = WordNetLemmatizer()
     stop_words = set(stopwords.words('english'))
 
