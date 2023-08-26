@@ -201,7 +201,7 @@ def top_channels_plot():
     st.pyplot(plt.gcf())
 
 #wykres 6
-def word_cloud:
+def word_cloud():
     nltk.download('punkt')
     # Wyciąganie tytułów
     titles = [item['title'] for item in youtube_records]
