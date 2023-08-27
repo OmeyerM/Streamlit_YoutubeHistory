@@ -272,7 +272,7 @@ default_chart = 'Youtube'
 
 # Wybór wyświetlanego wykresu na podstawie zakładki
 if selected_tab == 'Youtube':
-    st.markdown('<h3 style="text-align:center;">Analiza historii oglądania filmów na YouTube</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="text-align:center;">Podsumowanie filmowe - YouTube</h3>', unsafe_allow_html=True)
     
     #SEKCJA 1
     col3, col4 = st.columns(2)
