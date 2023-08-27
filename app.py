@@ -19,6 +19,8 @@ from nltk.stem import WordNetLemmatizer
 from wordcloud import WordCloud
 import nltk
 
+from st.components.v1 import html
+
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
@@ -299,7 +301,10 @@ if selected_tab == 'Youtube':
     with col2:
         update_day_of_week_plot(filter_month_name)
 
-
+    # Wyświetl animowany wykres HTML za pomocą komponentu st.components.v1.html
+    st.markdown('<h1>Top 10 Channels Over Time</h1>', unsafe_allow_html=True)
+    html_file = open('top_channels_animation.html', 'r', encoding='utf-8').read()
+    st.components.v1.html(html_file, width=800, height=600)
 
 
 
