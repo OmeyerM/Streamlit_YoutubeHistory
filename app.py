@@ -19,7 +19,7 @@ from nltk.stem import WordNetLemmatizer
 from wordcloud import WordCloud
 import nltk
 
-from st.components.v1 import html
+from streamlit.components.v1 import html
 
 nltk.download('punkt')
 nltk.download('wordnet')
