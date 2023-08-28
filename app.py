@@ -335,7 +335,7 @@ elif selected_tab == 'Youtube Music':
 
     for record in youtube_music_records:
         timestamp = record['time']
-        date = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').date()  # Wybieramy tylko datę, pomijając godzinę, minutę i sekundę
+        date = pd.to_datetime(timestamp).date()   # Wybieramy tylko datę, pomijając godzinę, minutę i sekundę
         
         if date in activity_counts_per_date:
             activity_counts_per_date[date] += 1
