@@ -9,7 +9,9 @@ import json
 import datetime
 import matplotlib.pyplot as plt
 #import pytz
+import numpy as np
 import pandas as pd
+import plotly.express as px
 #import unicodedata
 #import string
 
@@ -32,6 +34,10 @@ nltk.download('stopwords')
 # Odczytaj zbiory danych z plików JSON
 with open('youtube_records.json', 'r', encoding='utf-8') as file:
     youtube_records = json.load(file)
+
+with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
+    youtube_music_records = json.load(file)
+
 
 #WYKRES 1
 
@@ -308,11 +314,219 @@ if selected_tab == 'Youtube':
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 elif selected_tab == 'Youtube Music':
     st.markdown('<h3 style="text-align:center;">Podsumowanie muzyczne - YouTube Music</h3>', unsafe_allow_html=True)
     st.markdown('<h5 style="text-align:center;">W budowie</h5>', unsafe_allow_html=True)
-    #music_filter_month_name = st.selectbox('Wybierz miesiąc', month_names)
-    #update_music_plot(music_filter_month_name)
+    
+
+    # Przygotowanie danych do DataFrame
+    activity_counts_per_date = {}
+
+    for record in youtube_music_records:
+        timestamp = record['time']
+        date = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').date()  # Wybieramy tylko datę, pomijając godzinę, minutę i sekundę
+        
+        if date in activity_counts_per_date:
+            activity_counts_per_date[date] += 1
+        else:
+            activity_counts_per_date[date] = 1
+
+    data = {'Date': list(activity_counts_per_date.keys()), 'ActivityCount': list(activity_counts_per_date.values())}
+    df = pd.DataFrame(data)
+
+    #Wykres
+    st.markdown('<h3 style="font-size: 20px;">Filtr daty</h3>', unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)  # Tworzenie dwóch kolumn
+
+    with col1:
+        start_date = st.date_input('Wybierz datę początkową', df['Date'].min())
+
+    with col2:
+        end_date = st.date_input('Wybierz datę końcową', df['Date'].max())
+
+    filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+
+    fig = px.line(filtered_df, x='Date', y='ActivityCount', title='Aktywność na YouTube Music w czasie',
+                labels={'Date': 'Data', 'ActivityCount': 'Liczba aktywności'}, color_discrete_sequence=['red'])
+
+    # Wyświetlenie interaktywnego wykresu
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+
+    for record in youtube_music_records:
+        title = record['title']
+
+        # Sprawdzenie, czy pole 'subtitles' istnieje w rekordzie
+        if 'subtitles' in record and record['subtitles']:
+            subtitle = record['subtitles'][0]['name']  # Wybieramy nazwę wykonawcy z danych
+            # Usunięcie 'VEVO' z końca nazwy wykonawcy
+            subtitle = subtitle.replace('VEVO', '').strip()
+            # Zmiana 'AmeliaMoore' na 'Amelia Moore'
+            subtitle = subtitle.replace('AmeliaMoore', 'Amelia Moore')
+            record['subtitles'][0]['name'] = subtitle  # Aktualizacja nazwy wykonawcy w rekordzie
+        else:
+            subtitle = 'Nieznany wykonawca'
+
+        # Pobranie tylko części tekstu po ostatnim myślniku w tytule
+        if '-' in title:
+            title = title.rsplit('-', 1)[-1].strip()
+
+        # Usunięcie tekstu w nawiasach na końcu tytułu
+        if '(' in title and ')' in title:
+            title = title.rsplit('(', 1)[0].strip()
+        
+        record['title'] = title
+
+
+    # Przygotowanie danych do analizy
+    song_counts = Counter()
+
+    for record in youtube_music_records:
+        title = record['title']
+
+        # Sprawdzenie, czy pole 'subtitles' istnieje w rekordzie
+        if 'subtitles' in record and record['subtitles']:
+            subtitle = record['subtitles'][0]['name']  # Wybieramy nazwę wykonawcy z danych
+        else:
+            subtitle = 'Nieznany wykonawca'
+
+        song_counts[(title, subtitle)] += 1
+
+    # Konwersja na DataFrame
+    data = {'Title': [], 'Subtitle': [], 'Count': []}
+
+    for (title, subtitle), count in song_counts.items():
+        data['Title'].append(title)
+        data['Subtitle'].append(subtitle)
+        data['Count'].append(count)
+
+    df_songs = pd.DataFrame(data)
+
+    # Aplikacja Streamlit
+    st.title('Najczęściej odsłuchiwane utwory')
+
+    # Wybór ilości utworów do uwzględnienia
+    num_songs = st.slider('Wybierz ilość utworów', min_value=5, max_value=20, value=10)
+
+    # Sortowanie utworów według liczby odsłuchań
+    sorted_df = df_songs.sort_values(by='Count', ascending=False).head(num_songs)
+
+    # Tworzenie wykresu
+    fig = px.bar(sorted_df, x='Count', y='Title', orientation='h',
+                title=f'Top {num_songs} najczęściej odsłuchiwanych utworów',
+                labels={'Count': 'Liczba odsłuchań', 'Title': 'Tytuł utworu'}, color_discrete_sequence=['red'])
+
+    # Dodanie informacji o wykonawcy do etykiet na osi Y
+    fig.update_yaxes(ticktext=[f'{subtitle} - {title}' for subtitle, title  in zip(sorted_df['Subtitle'], sorted_df['Title'])],
+                    tickvals=sorted_df['Title'])
+
+    fig.update_layout(yaxis_tickfont=dict(size=10))
+
+
+    # Wyświetlenie interaktywnego wykresu
+    st.plotly_chart(fig, use_container_width=True)
+
+
+    # Przygotowanie danych do analizy (to jest Twój kod do wczytania danych)
+
+    # Obliczenie rozkładu odsłuchań według artystów
+    artist_counts = Counter()
+
+    for record in youtube_music_records:
+        if 'subtitles' in record and record['subtitles']:
+            artist = record['subtitles'][0]['name']
+            artist_counts[artist] += 1
+
+    # Konwersja na DataFrame
+    data_artist = {'Artist': [], 'Count': []}
+
+    for artist, count in artist_counts.items():
+        data_artist['Artist'].append(artist)
+        data_artist['Count'].append(count)
+
+    df_artists = pd.DataFrame(data_artist)
+
+    # Aplikacja Streamlit
+    st.title('Rozkład odsłuchań według artystów')
+
+    # Wybór ilości artystów do uwzględnienia
+    num_artists = st.slider('Wybierz ilość artystów', min_value=5, max_value=20, value=10)
+
+    # Sortowanie artystów według liczby odsłuchań
+    sorted_artists = df_artists.sort_values(by='Count', ascending=False).head(num_artists)
+
+    # Tworzenie wykresu
+    fig_artists = px.bar(sorted_artists, x='Count', y='Artist',
+                        title=f'Top {num_artists} artystów z największą liczbą odsłuchań',
+                        labels={'Count': 'Liczba odsłuchań', 'Artist': 'Artysta'},
+                        color_discrete_sequence=['red'])
+
+    fig_artists.update_layout(yaxis_tickfont=dict(size=10))
+
+    # Wyświetlenie interaktywnego wykresu
+    st.plotly_chart(fig_artists, use_container_width=True)
+
+
+
+    # Przygotowanie danych do analizy
+    hour_counts = np.zeros(24)
+
+    for record in youtube_music_records:
+        timestamp = record['time']
+        hour = pd.to_datetime(timestamp).hour
+        hour_counts[hour] += 1
+
+    # Tworzenie wykresu polarowego 
+    fig_hourly_activity_polar = px.bar_polar(
+        r=hour_counts,
+        theta=[f'{hour:02}:00' for hour in range(24)],
+        title='Dzienna aktywność odsłuchiwania muzyki',
+        labels={'theta': 'Godzina', 'r': 'Liczba odsłuchań'},
+        start_angle=90,
+        color_discrete_sequence=['red'],
+        template='plotly_dark'  # Ustawienie ciemnego tła
+    )
+
+    # Dostosowanie osi theta, aby odpowiadała godzinom zegara
+    fig_hourly_activity_polar.update_traces(theta=[f'{hour:02}:00' for hour in range(24)])
+
+    # Zmiana wyglądu tarczy - powiększenie koła i zmiana koloru
+    fig_hourly_activity_polar.update_polars(hole=0.1, bgcolor='black')
+
+    # Wyświetlenie interaktywnego wykresu
+    st.plotly_chart(fig_hourly_activity_polar, use_container_width=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # elif selected_tab == 'Reklamy':
 #     st.markdown('<h3 style="text-align:center;">Analiza wyświetlonych reklam na YouTube</h3>', unsafe_allow_html=True)
