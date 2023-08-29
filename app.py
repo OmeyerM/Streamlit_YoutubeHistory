@@ -1,19 +1,14 @@
 #Importowanie potrzebnych bibliotek
 import streamlit as st
 from collections import Counter
-#import calendar
 import locale
 
 import json
-#import random
 import datetime
 import matplotlib.pyplot as plt
-#import pytz
 import numpy as np
 import pandas as pd
 import plotly.express as px
-#import unicodedata
-#import string
 
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -26,10 +21,6 @@ from streamlit.components.v1 import html
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
-
-
-# Ustawienie lokalizacji na polską
-#locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 # Odczytaj zbiory danych z plików JSON
 with open('youtube_records.json', 'r', encoding='utf-8') as file:
@@ -44,10 +35,8 @@ with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
 # Przygotowanie danych
 hour_counts = Counter((record['month'], record['hour']) for record in youtube_records)
 
-# Lista nazw miesięcy
 month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
 
-# Funkcja do tworzenia i aktualizacji wykresu
 def update_plot(filter_month_name):
     filter_month = month_names.index(filter_month_name) + 1
     filtered_hour_counts = {hour: count for (month, hour), count in hour_counts.items() if month == filter_month}
@@ -65,7 +54,6 @@ def update_plot(filter_month_name):
 
 
 #WYKRES 2
-# Funkcja do tworzenia i aktualizacji wykresu
 def update_day_of_week_plot(filter_month_name):
     # Przetwarzanie danych
     day_of_week_counts = Counter()
@@ -77,10 +65,8 @@ def update_day_of_week_plot(filter_month_name):
         
         # Filtrowanie danych tylko dla wybranego miesiąca
         if datetime_obj.month == month_names.index(filter_month_name) + 1:
-            # Pobieranie nazwy dnia tygodnia
             day_name = datetime_obj.strftime('%A')
             
-            # Zliczanie ilości filmów dla danego dnia tygodnia
             day_of_week_counts[day_name] += 1
 
     days_of_week = list(day_of_week_counts.keys())
@@ -88,7 +74,6 @@ def update_day_of_week_plot(filter_month_name):
 
     data = pd.DataFrame({'Dzień tygodnia': days_of_week, 'Ilość filmów': view_counts})
 
-    #order = ['poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota', 'niedziela']
     order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
     data['Dzień tygodnia'] = pd.Categorical(data['Dzień tygodnia'], categories=order, ordered=True)
@@ -103,14 +88,14 @@ def update_day_of_week_plot(filter_month_name):
     plt.xlabel('Dzień tygodnia')
     plt.ylabel('Ilość filmów')
     plt.title(f'Ilość obejrzanych filmów na platformie YouTube w poszczególne dni tygodnia dla miesiąca {filter_month_name}')
-    plt.xticks(rotation=45)  # Obrót etykiet osi X
-    plt.tight_layout()  # Dopasowanie układu wykresu
+    plt.xticks(rotation=45)  
+    plt.tight_layout() 
 
     st.pyplot(plt.gcf())
 
 #Wykres 3
-# Tworzenie słownika, gdzie kluczem jest krotka (rok, miesiąc), a wartością ilość filmów
 def update_month_plot():
+    # Tworzenie słownika, gdzie kluczem jest krotka (rok, miesiąc), a wartością ilość filmów
     year_month_counts = {}
     for record in youtube_records:
         year = record['year']
@@ -118,11 +103,10 @@ def update_month_plot():
         year_month = (year, month)
         year_month_counts[year_month] = year_month_counts.get(year_month, 0) + 1
 
-    # Rozdzielenie danych na lata-miesiące i ilości
     year_months = list(year_month_counts.keys())
     counts = list(year_month_counts.values())
 
-    # Konwersja krotek (rok, miesiąc) na czytelne napisy "YYYY-MM"
+    # Konwersja krotek na czytelne napisy "YYYY-MM"
     year_month_labels = [f"{year}-{month:02d}" for year, month in year_months]
 
     # Tworzenie wykresu
@@ -158,7 +142,7 @@ def update_year_month_day_plot():
     # Unikalne pary rok-msc
     unique_year_month = data['year_month'].unique()
 
-    # Definicja ręcznych kolorów dla poszczególnych miesięcy
+    # Definicja kolorów dla poszczególnych miesięcy
     color_palette = [
         '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
         '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
@@ -168,7 +152,7 @@ def update_year_month_day_plot():
         '#9467bd', '#7f7f7f', '#e377c2', '#bcbd22', '#17becf'
     ]
 
-    # Tworzenie wykresu słupkowego
+    # Tworzenie wykresu
     plt.figure(figsize=(10, 6))
     bars = plt.bar(data.index, data['views'], color=[color_palette[unique_year_month.tolist().index(ym)] for ym in data['year_month']])
     plt.xlabel('Data (RRRR-MM-DD)')
@@ -178,6 +162,7 @@ def update_year_month_day_plot():
     plt.tight_layout()
 
     st.pyplot(plt.gcf())
+
 
 #Wykres 5
 def top_channels_plot():
@@ -192,13 +177,11 @@ def top_channels_plot():
             channel_counter[channel_name] += 1
 
     # Rozbicie licznika na listy nazw kanałów i ilości filmów
-    channel_names, video_counts = zip(*sorted(channel_counter.items(), key=lambda x: x[1], reverse=True))
+    #channel_names, video_counts = zip(*sorted(channel_counter.items(), key=lambda x: x[1], reverse=True))
 
     # Wybór top 10 kanałów z największą ilością filmów
     top_channels = channel_counter.most_common(10)
     channel_names, video_counts = zip(*top_channels)
-    
-    print(top_channels)
 
     # Tworzenie wykresu słupkowego
     plt.figure(figsize=(10, 6))
