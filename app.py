@@ -22,13 +22,29 @@ nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
 
-# Odczytaj zbiory danych z plików JSON
-with open('youtube_records.json', 'r', encoding='utf-8') as file:
-    youtube_records = json.load(file)
+# # Odczytaj zbiory danych z plików JSON
+# with open('youtube_records.json', 'r', encoding='utf-8') as file:
+#     youtube_records = json.load(file)
 
-with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
-    youtube_music_records = json.load(file)
+# with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
+#     youtube_music_records = json.load(file)
 
+# Dekorator @st.cache nad funkcją wczytującą dane z pliku JSON
+@st.cache
+def load_youtube_records():
+    with open('youtube_records.json', 'r', encoding='utf-8') as file:
+        youtube_records = json.load(file)
+    return youtube_records
+
+@st.cache
+def load_youtube_music_records():
+    with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
+        youtube_music_records = json.load(file)
+    return youtube_music_records
+
+# Odczyt danych z cache
+youtube_records = load_youtube_records()
+youtube_music_records = load_youtube_music_records()
 
 # Ustawienia ogólne dla strony
 st.set_page_config(
