@@ -181,6 +181,7 @@ if selected_tab == 'Youtube':
         st.pyplot(plt.gcf())
 
     #SEKCJA 3
+    month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
     filter_month_name = st.selectbox('# Wybierz miesiąc', month_names)
     col5, col6 = st.columns(2)  
     
@@ -188,7 +189,7 @@ if selected_tab == 'Youtube':
         # Przygotowanie danych
         hour_counts = Counter((record['month'], record['hour']) for record in youtube_records)
         
-        month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
+        #month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
         filter_month = month_names.index(filter_month_name) + 1
         filtered_hour_counts = {hour: count for (month, hour), count in hour_counts.items() if month == filter_month}
         hours = list(range(24))
