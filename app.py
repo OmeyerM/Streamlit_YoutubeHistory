@@ -68,109 +68,24 @@ if selected_tab == 'Youtube':
 
 
     
-    # #SEKCJA 1
-    # col1, col2 = st.columns(2)
-    # with col1:
-    #     # Tworzenie słownika, gdzie kluczem jest krotka (rok, miesiąc), a wartością ilość filmów
-    #     year_month_counts = {}
-    #     for record in youtube_records:
-    #         year = record['year']
-    #         month = record['month']
-    #         year_month = (year, month)
-    #         year_month_counts[year_month] = year_month_counts.get(year_month, 0) + 1
-    
-    #     year_months = list(year_month_counts.keys())
-    #     counts = list(year_month_counts.values())
-    
-    #     # Konwersja krotek na czytelne napisy "YYYY-MM"
-    #     year_month_labels = [f"{year}-{month:02d}" for year, month in year_months]
-    
-    #     # Tworzenie wykresu
-    #     plt.figure(figsize=(10,6))
-    #     plt.bar(year_month_labels[::-1], counts[::-1], color=(1, 0, 0, 0.8))
-    #     plt.xlabel('Rok-Miesiąc')
-    #     plt.ylabel('Ilość filmów')
-    #     plt.title('Ilość obejrzanych filmów na platformie YouTube w poszczególnych miesiącach')
-    #     plt.xticks(rotation=45, ha='right')
-    #     plt.tight_layout()
-    
-    #     st.pyplot(plt.gcf())
-
-    # with col2:
-    #     # Tworzenie daty z rokiem, miesiącem i dniem
-    #     year_month_day_dates = [f"{record['year']}-{record['month']:02d}-{record['day']:02d}" for record in youtube_records]
-    
-    #     # Obliczenie ilości obejrzanych filmów dla każdej daty
-    #     date_counts = Counter(year_month_day_dates)
-    
-    #     # Tworzenie listy unikalnych dat w formacie rok-msc-dzień
-    #     unique_dates = sorted(list(date_counts.keys()))
-    
-    #     # Ilości obejrzanych filmów dla poszczególnych dat
-    #     view_counts = [date_counts[date] for date in unique_dates]
-    
-    #     # Tworzenie DataFrame z unikalnymi datami
-    #     data = pd.DataFrame({'date': unique_dates, 'views': view_counts})
-    #     data['year_month'] = data['date'].apply(lambda x: x[:7])
-    
-    #     # Unikalne pary rok-msc
-    #     unique_year_month = data['year_month'].unique()
-    
-    #     # Definicja kolorów dla poszczególnych miesięcy
-    #     color_palette = [
-    #         '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-    #         '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-    #         '#8c564b', '#1f77b4', '#2ca02c', '#ff7f0e', '#d62728',
-    #         '#9467bd', '#7f7f7f', '#e377c2', '#bcbd22', '#17becf',
-    #         '#8c564b', '#1f77b4', '#2ca02c', '#ff7f0e', '#d62728',
-    #         '#9467bd', '#7f7f7f', '#e377c2', '#bcbd22', '#17becf'
-    #     ]
-    
-    #     # Tworzenie wykresu
-    #     plt.figure(figsize=(10, 6))
-    #     bars = plt.bar(data.index, data['views'], color=[color_palette[unique_year_month.tolist().index(ym)] for ym in data['year_month']])
-    #     plt.xlabel('Data (RRRR-MM-DD)')
-    #     plt.ylabel('Ilość filmów')
-    #     plt.title('Ilość obejrzanych filmów na platformie YouTube w poszczególnych dniach')
-    #     plt.xticks(range(0, len(unique_dates), 30), data['date'][::30], rotation=45)  # Wyświetlanie co 30 etykiet
-    #     plt.tight_layout()
-    
-    #     st.pyplot(plt.gcf())
-
-    @st.cache_data
-    def prepare_monthly_counts_data(youtube_records):
+    #SEKCJA 1
+    col1, col2 = st.columns(2)
+    with col1:
+        # Tworzenie słownika, gdzie kluczem jest krotka (rok, miesiąc), a wartością ilość filmów
         year_month_counts = {}
         for record in youtube_records:
             year = record['year']
             month = record['month']
             year_month = (year, month)
             year_month_counts[year_month] = year_month_counts.get(year_month, 0) + 1
-        
+    
         year_months = list(year_month_counts.keys())
         counts = list(year_month_counts.values())
-        
+    
+        # Konwersja krotek na czytelne napisy "YYYY-MM"
         year_month_labels = [f"{year}-{month:02d}" for year, month in year_months]
-        
-        return year_month_labels, counts
     
-    @st.cache_data
-    def prepare_daily_counts_data(youtube_records):
-        year_month_day_dates = [f"{record['year']}-{record['month']:02d}-{record['day']:02d}" for record in youtube_records]
-        date_counts = Counter(year_month_day_dates)
-        unique_dates = sorted(list(date_counts.keys()))
-        view_counts = [date_counts[date] for date in unique_dates]
-    
-        data = pd.DataFrame({'date': unique_dates, 'views': view_counts})
-        data['year_month'] = data['date'].apply(lambda x: x[:7])
-        unique_year_month = data['year_month'].unique()
-    
-        return data, unique_year_month
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        year_month_labels, counts = prepare_monthly_counts_data(youtube_records)
-    
+        # Tworzenie wykresu
         plt.figure(figsize=(10,6))
         plt.bar(year_month_labels[::-1], counts[::-1], color=(1, 0, 0, 0.8))
         plt.xlabel('Rok-Miesiąc')
@@ -180,10 +95,28 @@ if selected_tab == 'Youtube':
         plt.tight_layout()
     
         st.pyplot(plt.gcf())
-    
+
     with col2:
-        data, unique_year_month = prepare_daily_counts_data(youtube_records)
+        # Tworzenie daty z rokiem, miesiącem i dniem
+        year_month_day_dates = [f"{record['year']}-{record['month']:02d}-{record['day']:02d}" for record in youtube_records]
     
+        # Obliczenie ilości obejrzanych filmów dla każdej daty
+        date_counts = Counter(year_month_day_dates)
+    
+        # Tworzenie listy unikalnych dat w formacie rok-msc-dzień
+        unique_dates = sorted(list(date_counts.keys()))
+    
+        # Ilości obejrzanych filmów dla poszczególnych dat
+        view_counts = [date_counts[date] for date in unique_dates]
+    
+        # Tworzenie DataFrame z unikalnymi datami
+        data = pd.DataFrame({'date': unique_dates, 'views': view_counts})
+        data['year_month'] = data['date'].apply(lambda x: x[:7])
+    
+        # Unikalne pary rok-msc
+        unique_year_month = data['year_month'].unique()
+    
+        # Definicja kolorów dla poszczególnych miesięcy
         color_palette = [
             '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
             '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
@@ -193,19 +126,16 @@ if selected_tab == 'Youtube':
             '#9467bd', '#7f7f7f', '#e377c2', '#bcbd22', '#17becf'
         ]
     
+        # Tworzenie wykresu
         plt.figure(figsize=(10, 6))
         bars = plt.bar(data.index, data['views'], color=[color_palette[unique_year_month.tolist().index(ym)] for ym in data['year_month']])
         plt.xlabel('Data (RRRR-MM-DD)')
         plt.ylabel('Ilość filmów')
         plt.title('Ilość obejrzanych filmów na platformie YouTube w poszczególnych dniach')
-        plt.xticks(range(0, len(unique_year_month), 30), data['date'][::30], rotation=45)
+        plt.xticks(range(0, len(unique_dates), 30), data['date'][::30], rotation=45)  # Wyświetlanie co 30 etykiet
         plt.tight_layout()
     
         st.pyplot(plt.gcf())
-
-
-
-
 
 
 
