@@ -41,7 +41,7 @@ centered_text = '<p style="text-align:center;font-size:36px;">Analiza danych - m
 st.markdown('<h1 style="text-align:center;">Analiza danych - mój YouTube</h1>', unsafe_allow_html=True)
 
 # Wybór wyświetlanego wykresu na podstawie zakładki
-selected_tab = st.radio('Wybierz zbiór danych do wyświetlenia:', ['Youtube', 'Youtube Music']))
+selected_tab = st.radio('Wybierz zbiór danych do wyświetlenia:', ['Youtube', 'Youtube Music'])
 
 # Domyślny wybór dla wyświetlenia wykresu
 default_chart = 'Youtube'
