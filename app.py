@@ -131,45 +131,100 @@ if selected_tab == 'Youtube':
     
         st.pyplot(plt.gcf())
 
-    #SEKCJA 2
-    col3, col4 = st.columns(2)
 
-    with col3:
-        # Utworzenie słownika dla zliczania filmów na każdym kanale
+
+
+
+
+
+
+
+
+
+    
+    # #SEKCJA 2
+    # col3, col4 = st.columns(2)
+
+    # with col3:
+    #     # Utworzenie słownika dla zliczania filmów na każdym kanale
+    #     channel_counter = Counter()
+    
+    #     # Iteracja po przefiltrowanych danych i zliczanie na każdym kanale
+    #     for item in youtube_records:
+    #         subtitles = item.get('subtitles', [])
+    #         for subtitle in subtitles:
+    #             channel_name = subtitle.get('name')
+    #             channel_counter[channel_name] += 1
+    
+    #     # Rozbicie licznika na listy nazw kanałów i ilości filmów
+    #     #channel_names, video_counts = zip(*sorted(channel_counter.items(), key=lambda x: x[1], reverse=True))
+    
+    #     # Wybór top 10 kanałów z największą ilością filmów
+    #     top_channels = channel_counter.most_common(10)
+    #     channel_names, video_counts = zip(*top_channels)
+    
+    #     # Tworzenie wykresu słupkowego
+    #     plt.figure(figsize=(10, 6))
+    #     plt.barh(channel_names, video_counts, color=(1, 0, 0, 0.8))
+    #     plt.xlabel('Ilość filmów')
+    #     plt.ylabel('Kanał')
+    #     plt.title('Top 10 kanałów na YouTube z największą ilością obejrzanych filmów')
+    
+    #     plt.gca().invert_yaxis()  
+    
+    #     st.pyplot(plt.gcf())
+    
+    # with col4:
+    #     # Wyciąganie tytułów
+    #     titles = [item['title'] for item in youtube_records]
+    
+    #     cleaned_titles = [title.lstrip('Watched').strip() for title in titles]
+    
+    #     # Tokenizacja, lematyzacja i usuwanie stopwords
+    #     lemmatizer = WordNetLemmatizer()
+    #     stop_words = set(stopwords.words('english'))
+    
+    #     words = []
+    #     for title in cleaned_titles:
+    #         tokens = word_tokenize(title.lower())
+    #         lemmas = [lemmatizer.lemmatize(token) for token in tokens if token.isalnum()]
+    #         filtered_words = [word for word in lemmas if word not in stop_words]
+    #         words.extend(filtered_words)
+    
+    #     # Tworzenie chmury słów
+    #     wordcloud = WordCloud(width=800, height=410, background_color='white').generate(' '.join(words))
+    
+    #     # Wizualizacja
+    #     plt.figure(figsize=(10, 6))
+    #     plt.imshow(wordcloud, interpolation='bilinear')
+    #     plt.axis('off')
+    #     plt.title('Chmura słów na podstawie tytułów obejrzanych filmów na YouTube')
+        
+    #     st.pyplot(plt.gcf())
+
+
+
+    @st.cache_data
+    def prepare_top_channels_data(youtube_records):
         channel_counter = Counter()
     
-        # Iteracja po przefiltrowanych danych i zliczanie na każdym kanale
         for item in youtube_records:
             subtitles = item.get('subtitles', [])
             for subtitle in subtitles:
                 channel_name = subtitle.get('name')
                 channel_counter[channel_name] += 1
     
-        # Rozbicie licznika na listy nazw kanałów i ilości filmów
-        #channel_names, video_counts = zip(*sorted(channel_counter.items(), key=lambda x: x[1], reverse=True))
-    
-        # Wybór top 10 kanałów z największą ilością filmów
         top_channels = channel_counter.most_common(10)
         channel_names, video_counts = zip(*top_channels)
     
-        # Tworzenie wykresu słupkowego
-        plt.figure(figsize=(10, 6))
-        plt.barh(channel_names, video_counts, color=(1, 0, 0, 0.8))
-        plt.xlabel('Ilość filmów')
-        plt.ylabel('Kanał')
-        plt.title('Top 10 kanałów na YouTube z największą ilością obejrzanych filmów')
+        return channel_names, video_counts
     
-        plt.gca().invert_yaxis()  
-    
-        st.pyplot(plt.gcf())
-    
-    with col4:
-        # Wyciąganie tytułów
+    @st.cache_data
+    def prepare_wordcloud_data(youtube_records):
         titles = [item['title'] for item in youtube_records]
     
         cleaned_titles = [title.lstrip('Watched').strip() for title in titles]
     
-        # Tokenizacja, lematyzacja i usuwanie stopwords
         lemmatizer = WordNetLemmatizer()
         stop_words = set(stopwords.words('english'))
     
@@ -180,18 +235,36 @@ if selected_tab == 'Youtube':
             filtered_words = [word for word in lemmas if word not in stop_words]
             words.extend(filtered_words)
     
-        # Tworzenie chmury słów
-        wordcloud = WordCloud(width=800, height=410, background_color='white').generate(' '.join(words))
+        return ' '.join(words)
     
-        # Wizualizacja
+    col3, col4 = st.columns(2)
+    
+    with col3:
+        channel_names, video_counts = prepare_top_channels_data(youtube_records)
+    
+        plt.figure(figsize=(10, 6))
+        plt.barh(channel_names, video_counts, color=(1, 0, 0, 0.8))
+        plt.xlabel('Ilość filmów')
+        plt.ylabel('Kanał')
+        plt.title('Top 10 kanałów na YouTube z największą ilością obejrzanych filmów')
+        plt.gca().invert_yaxis()
+    
+        st.pyplot(plt.gcf())
+    
+    with col4:
+        wordcloud_data = prepare_wordcloud_data(youtube_records)
+        wordcloud = WordCloud(width=800, height=410, background_color='white').generate(wordcloud_data)
+    
         plt.figure(figsize=(10, 6))
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis('off')
         plt.title('Chmura słów na podstawie tytułów obejrzanych filmów na YouTube')
-        
+    
         st.pyplot(plt.gcf())
 
 
+
+    
 
 
 
