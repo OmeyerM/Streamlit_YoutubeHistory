@@ -145,12 +145,12 @@ if selected_tab == 'Youtube':
             month = record['month']
             year_month = (year, month)
             year_month_counts[year_month] = year_month_counts.get(year_month, 0) + 1
-    
+        
         year_months = list(year_month_counts.keys())
         counts = list(year_month_counts.values())
-    
+        
         year_month_labels = [f"{year}-{month:02d}" for year, month in year_months]
-    
+        
         return year_month_labels, counts
     
     @st.cache_data
@@ -198,7 +198,7 @@ if selected_tab == 'Youtube':
         plt.xlabel('Data (RRRR-MM-DD)')
         plt.ylabel('Ilość filmów')
         plt.title('Ilość obejrzanych filmów na platformie YouTube w poszczególnych dniach')
-        plt.xticks(range(0, len(unique_dates), 30), data['date'][::30], rotation=45)
+        plt.xticks(range(0, len(unique_year_month), 30), data['date'][::30], rotation=45)
         plt.tight_layout()
     
         st.pyplot(plt.gcf())
