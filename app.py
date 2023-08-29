@@ -22,6 +22,12 @@ nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
 
+# Ustawienia ogólne dla strony
+st.set_page_config(
+    page_title="Analiza danych - mój YouTube",
+    layout="wide"
+)
+
 # # Odczytaj zbiory danych z plików JSON
 # with open('youtube_records.json', 'r', encoding='utf-8') as file:
 #     youtube_records = json.load(file)
@@ -29,31 +35,25 @@ nltk.download('stopwords')
 # with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
 #     youtube_music_records = json.load(file)
 
-# Dekorator @st.cache nad funkcją wczytującą dane z pliku JSON
-@st.cache
+@st.cache_resource('youtube_records.json')
 def load_youtube_records():
     with open('youtube_records.json', 'r', encoding='utf-8') as file:
         youtube_records = json.load(file)
     return youtube_records
 
-@st.cache
+@st.cache_resource('youtube_music_records.json')
 def load_youtube_music_records():
     with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
         youtube_music_records = json.load(file)
     return youtube_music_records
 
-# Odczyt danych z cache
+# Load data using new caching commands
 youtube_records = load_youtube_records()
 youtube_music_records = load_youtube_music_records()
 
-# Ustawienia ogólne dla strony
-st.set_page_config(
-    page_title="Analiza danych - mój YouTube",
-    layout="wide"
-)
 
 # Styl dla wyśrodkowanego tekstu
-centered_text = '<p style="text-align:center;font-size:36px;">Analiza danych - mój YouTube</p>'
+# centered_text = '<p style="text-align:center;font-size:36px;">Analiza danych - mój YouTube</p>'
 st.markdown('<h1 style="text-align:center;">Analiza danych - mój YouTube</h1>', unsafe_allow_html=True)
 
 # Wybór wyświetlanego wykresu na podstawie zakładki
