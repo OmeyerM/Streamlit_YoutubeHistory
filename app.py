@@ -28,6 +28,8 @@ st.set_page_config(
     layout="wide"
 )
 
+st.balloons()
+
 # Load the data from JSON and use Python's caching mechanism
 @st.cache_data
 def load_data(file_path):
