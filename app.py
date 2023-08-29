@@ -409,30 +409,68 @@ elif selected_tab == 'Youtube Music':
     st.plotly_chart(fig, use_container_width=True)
 
 
-    #WYKRES 4
-    # Przygotowanie danych do analizy
-    hour_counts = np.zeros(24)
+    # #WYKRES 4
+    # # Przygotowanie danych do analizy
+    # hour_counts = np.zeros(24)
 
-    for record in youtube_music_records:
-        timestamp = record['time']
-        hour = pd.to_datetime(timestamp).hour
-        hour_counts[hour] += 1
+    # for record in youtube_music_records:
+    #     timestamp = record['time']
+    #     hour = pd.to_datetime(timestamp).hour
+    #     hour_counts[hour] += 1
 
-    # Tworzenie wykresu polarowego 
-    fig_hourly_activity_polar = px.bar_polar(
-        r=hour_counts,
-        theta=[f'{hour:02}:00' for hour in range(24)],
-        title='Godzinowa aktywność odsłuchiwania muzyki',
-        labels={'theta': 'Godzina', 'r': 'Liczba odsłuchań'},
-        start_angle=90,
-        color_discrete_sequence=['red'],
-        template='plotly_dark'  # Ustawienie ciemnego tła
-    )
+    # # Tworzenie wykresu polarowego 
+    # fig_hourly_activity_polar = px.bar_polar(
+    #     r=hour_counts,
+    #     theta=[f'{hour:02}:00' for hour in range(24)],
+    #     title='Godzinowa aktywność odsłuchiwania muzyki',
+    #     labels={'theta': 'Godzina', 'r': 'Liczba odsłuchań'},
+    #     start_angle=90,
+    #     color_discrete_sequence=['red'],
+    #     template='plotly_dark'  # Ustawienie ciemnego tła
+    # )
 
-    # Dostosowanie osi theta i koloru wykresu
-    fig_hourly_activity_polar.update_traces(theta=[f'{hour:02}:00' for hour in range(24)])
-    fig_hourly_activity_polar.update_polars(hole=0.1, bgcolor='black')
+    # # Dostosowanie osi theta i koloru wykresu
+    # fig_hourly_activity_polar.update_traces(theta=[f'{hour:02}:00' for hour in range(24)])
+    # fig_hourly_activity_polar.update_polars(hole=0.1, bgcolor='black')
 
-    #Wyświetlenie 
-    st.plotly_chart(fig_hourly_activity_polar, use_container_width=True)
+    # #Wyświetlenie 
+    # st.plotly_chart(fig_hourly_activity_polar, use_container_width=True)
+
+
+    # Przygotowanie danych do analizy godzinowej aktywności
+    def prepare_hourly_activity_data(data):
+        hour_counts = np.zeros(24)
+    
+        for record in data:
+            timestamp = record['time']
+            hour = pd.to_datetime(timestamp).hour
+            hour_counts[hour] += 1
+    
+        return hour_counts
+    
+    # Cachowanie przygotowania danych
+    hourly_activity_data = st.cache_data(prepare_hourly_activity_data, data=youtube_music_records)
+    
+    # Generowanie wykresu polarowego na podstawie przygotowanych danych
+    def generate_polar_chart(hourly_activity_data):
+        fig_hourly_activity_polar = px.bar_polar(
+            r=hourly_activity_data,
+            theta=[f'{hour:02}:00' for hour in range(24)],
+            title='Godzinowa aktywność odsłuchiwania muzyki',
+            labels={'theta': 'Godzina', 'r': 'Liczba odsłuchań'},
+            start_angle=90,
+            color_discrete_sequence=['red'],
+            template='plotly_dark'
+        )
+    
+        fig_hourly_activity_polar.update_traces(theta=[f'{hour:02}:00' for hour in range(24)])
+        fig_hourly_activity_polar.update_polars(hole=0.1, bgcolor='black')
+    
+        return fig_hourly_activity_polar
+    
+    # Cachowanie funkcji generującej wykres na podstawie przygotowanych danych
+    polar_chart = st.cache_data(generate_polar_chart, hourly_activity_data)
+    
+    # Wyświetlenie wykresu
+    st.plotly_chart(polar_chart, use_container_width=True)
 
