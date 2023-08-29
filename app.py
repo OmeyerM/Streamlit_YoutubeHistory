@@ -36,7 +36,7 @@ st.set_page_config(
 #     youtube_music_records = json.load(file)
 
 # Load the data from JSON and use Python's caching mechanism
-@st.cache
+@st.cache_data
 def load_data(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         data = json.load(file)
