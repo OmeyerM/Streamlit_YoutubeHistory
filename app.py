@@ -438,6 +438,7 @@ elif selected_tab == 'Youtube Music':
 
 
     # Przygotowanie danych do analizy godzinowej aktywności
+    @st.cache_data
     def prepare_hourly_activity_data(data):
         hour_counts = np.zeros(24)
     
@@ -448,10 +449,8 @@ elif selected_tab == 'Youtube Music':
     
         return hour_counts
     
-    # Cachowanie przygotowania danych
-    hourly_activity_data = st.cache_data(prepare_hourly_activity_data, data=youtube_music_records)
-    
     # Generowanie wykresu polarowego na podstawie przygotowanych danych
+    @st.cache_data
     def generate_polar_chart(hourly_activity_data):
         fig_hourly_activity_polar = px.bar_polar(
             r=hourly_activity_data,
@@ -468,9 +467,11 @@ elif selected_tab == 'Youtube Music':
     
         return fig_hourly_activity_polar
     
-    # Cachowanie funkcji generującej wykres na podstawie przygotowanych danych
-    polar_chart = st.cache_data(generate_polar_chart, hourly_activity_data)
+    # Użycie przygotowanych danych i wygenerowanego wykresu
+    hourly_activity_data = prepare_hourly_activity_data(youtube_music_records)
+    polar_chart = generate_polar_chart(hourly_activity_data)
     
     # Wyświetlenie wykresu
     st.plotly_chart(polar_chart, use_container_width=True)
+
 
