@@ -425,8 +425,39 @@ elif selected_tab == 'Youtube Music':
     
         return hour_counts
     
+    # # Generowanie wykresu polarowego na podstawie przygotowanych danych
+    # @st.cache_data
+    # def generate_polar_chart(hourly_activity_data):
+    #     fig_hourly_activity_polar = px.bar_polar(
+    #         r=hourly_activity_data,
+    #         theta=[f'{hour:02}:00' for hour in range(24)],
+    #         title='Godzinowa aktywność odsłuchiwania muzyki',
+    #         labels={'theta': 'Godzina', 'r': 'Liczba odsłuchań'},
+    #         start_angle=90,
+    #         color_discrete_sequence=['red'],
+    #         template='plotly_dark'
+    #     )
+    
+    #     fig_hourly_activity_polar.update_traces(theta=[f'{hour:02}:00' for hour in range(24)])
+    #     fig_hourly_activity_polar.update_polars(hole=0.1, bgcolor='black')
+    
+    #     return fig_hourly_activity_polar
+    
+    # # Użycie przygotowanych danych i wygenerowanego wykresu
+    # hourly_activity_data = prepare_hourly_activity_data(youtube_music_records)
+    # polar_chart = generate_polar_chart(hourly_activity_data)
+    
+    # # Wyświetlenie wykresu
+    # st.plotly_chart(polar_chart, use_container_width=True)
+
+    
+    # Ukrycie komunikatu "Running prepare_hourly_activity_data(...)" za pomocą spinnera
+    with st.spinner("Przygotowywanie danych..."):
+        # Tutaj umieść kod przygotowujący dane
+        hourly_activity_data = prepare_hourly_activity_data(youtube_music_records)
+        st.write("Dane gotowe do wyświetlenia.")
+    
     # Generowanie wykresu polarowego na podstawie przygotowanych danych
-    @st.cache_data
     def generate_polar_chart(hourly_activity_data):
         fig_hourly_activity_polar = px.bar_polar(
             r=hourly_activity_data,
@@ -437,14 +468,13 @@ elif selected_tab == 'Youtube Music':
             color_discrete_sequence=['red'],
             template='plotly_dark'
         )
-    
+        
         fig_hourly_activity_polar.update_traces(theta=[f'{hour:02}:00' for hour in range(24)])
         fig_hourly_activity_polar.update_polars(hole=0.1, bgcolor='black')
-    
+        
         return fig_hourly_activity_polar
     
     # Użycie przygotowanych danych i wygenerowanego wykresu
-    hourly_activity_data = prepare_hourly_activity_data(youtube_music_records)
     polar_chart = generate_polar_chart(hourly_activity_data)
     
     # Wyświetlenie wykresu
