@@ -310,7 +310,6 @@ if selected_tab == 'Youtube':
 
 elif selected_tab == 'Youtube Music':
     st.markdown('<h3 style="text-align:center;">Podsumowanie muzyczne - YouTube Music</h3>', unsafe_allow_html=True)
-    st.markdown('<h5 style="text-align:center;">W budowie</h5>', unsafe_allow_html=True)
     
 
     # Przygotowanie danych do DataFrame
