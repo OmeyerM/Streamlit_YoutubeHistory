@@ -285,7 +285,7 @@ elif selected_tab == 'Youtube Music':
     filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
 
     fig = px.line(filtered_df, x='Date', y='ActivityCount', title='Aktywność na YouTube Music w czasie',
-                labels={'Date': 'Data', 'ActivityCount': 'Liczba aktywności'}, color_discrete_sequence=['red'])
+                labels={'Date': 'Data', 'ActivityCount': 'Liczba odsłuchanych utworów'}, color_discrete_sequence=['red'])
 
     # Wyświetlenie interaktywnego wykresu
     st.plotly_chart(fig, use_container_width=True)
