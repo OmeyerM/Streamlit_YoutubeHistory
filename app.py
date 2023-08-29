@@ -243,18 +243,10 @@ if selected_tab == 'Youtube':
     
         st.pyplot(plt.gcf())
 
-    # # Wyświetl animowany wykres HTML za pomocą komponentu st.components.v1.html
-    # st.markdown('<h3>Top 10 Channels Over Time</h3>', unsafe_allow_html=True)
-    # html_file = open('top_channels_animation.html', 'r', encoding='utf-8').read()
-    # st.components.v1.html(html_file, use_container_width=True) #width=1300, height=600)
-
-    # Wczytaj zawartość pliku HTML
-    html_file_content = open('top_channels_animation.html', 'r', encoding='utf-8').read()
-    
-    # Wyświetl animowany wykres HTML
+    # Wyświetl animowany wykres HTML za pomocą komponentu st.components.v1.html
     st.markdown('<h3>Top 10 Channels Over Time</h3>', unsafe_allow_html=True)
-    st.markdown(html_file_content, unsafe_allow_html=True)
-
+    html_file = open('top_channels_animation.html', 'r', encoding='utf-8').read()
+    st.components.v1.html(html_file)
 
 
 ##########################################################################################################
@@ -298,8 +290,43 @@ elif selected_tab == 'Youtube Music':
     # Wyświetlenie interaktywnego wykresu
     st.plotly_chart(fig, use_container_width=True)
 
+    #WYKRES 2 - ARTYŚCI
+    # Obliczenie rozkładu odsłuchań według artystów
+    artist_counts = Counter()
 
-    #WYKRES 2
+    for record in youtube_music_records:
+        if 'subtitles' in record and record['subtitles']:
+            artist = record['subtitles'][0]['name']
+            artist_counts[artist] += 1
+
+    # Konwersja na DataFrame
+    data_artist = {'Artist': [], 'Count': []}
+
+    for artist, count in artist_counts.items():
+        data_artist['Artist'].append(artist)
+        data_artist['Count'].append(count)
+
+    df_artists = pd.DataFrame(data_artist)
+
+    # Wybór ilości artystów do uwzględnienia
+    num_artists = st.slider('Wybierz ilość artystów', min_value=5, max_value=20, value=10)
+
+    # Sortowanie artystów według liczby odsłuchań
+    sorted_artists = df_artists.sort_values(by='Count', ascending=False).head(num_artists)
+
+    # Tworzenie wykresu
+    fig_artists = px.bar(sorted_artists, x='Count', y='Artist',
+                        title=f'Top {num_artists} artystów z największą liczbą odsłuchań',
+                        labels={'Count': 'Liczba odsłuchań', 'Artist': 'Artysta'},
+                        color_discrete_sequence=['red'])
+
+    fig_artists.update_layout(yaxis_tickfont=dict(size=10))
+
+    # Wyświetlenie interaktywnego wykresu
+    st.plotly_chart(fig_artists, use_container_width=True)
+
+
+    #WYKRES 3 - UTWORY
     for record in youtube_music_records:
         title = record['title']
 
@@ -357,7 +384,7 @@ elif selected_tab == 'Youtube Music':
 
     # Tworzenie wykresu
     fig = px.bar(sorted_df, x='Count', y='Title', orientation='h',
-                title=f'Top {num_songs} najczęściej odsłuchiwanych utworów',
+                title=f'Top {num_songs} utworów z największą liczbą odsłuchań',
                 labels={'Count': 'Liczba odsłuchań', 'Title': 'Tytuł utworu'}, color_discrete_sequence=['red'])
 
     # Dodanie informacji o wykonawcy do etykiet na osi Y
@@ -369,42 +396,6 @@ elif selected_tab == 'Youtube Music':
 
     # Wyświetlenie interaktywnego wykresu
     st.plotly_chart(fig, use_container_width=True)
-
-
-    #WYKRES 3
-    # Obliczenie rozkładu odsłuchań według artystów
-    artist_counts = Counter()
-
-    for record in youtube_music_records:
-        if 'subtitles' in record and record['subtitles']:
-            artist = record['subtitles'][0]['name']
-            artist_counts[artist] += 1
-
-    # Konwersja na DataFrame
-    data_artist = {'Artist': [], 'Count': []}
-
-    for artist, count in artist_counts.items():
-        data_artist['Artist'].append(artist)
-        data_artist['Count'].append(count)
-
-    df_artists = pd.DataFrame(data_artist)
-
-    # Wybór ilości artystów do uwzględnienia
-    num_artists = st.slider('Wybierz ilość artystów', min_value=5, max_value=20, value=10)
-
-    # Sortowanie artystów według liczby odsłuchań
-    sorted_artists = df_artists.sort_values(by='Count', ascending=False).head(num_artists)
-
-    # Tworzenie wykresu
-    fig_artists = px.bar(sorted_artists, x='Count', y='Artist',
-                        title=f'Top {num_artists} artystów z największą liczbą odsłuchań',
-                        labels={'Count': 'Liczba odsłuchań', 'Artist': 'Artysta'},
-                        color_discrete_sequence=['red'])
-
-    fig_artists.update_layout(yaxis_tickfont=dict(size=10))
-
-    # Wyświetlenie interaktywnego wykresu
-    st.plotly_chart(fig_artists, use_container_width=True)
 
 
     #WYKRES 4
