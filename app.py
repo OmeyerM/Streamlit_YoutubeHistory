@@ -265,39 +265,82 @@ if selected_tab == 'Youtube':
 
 elif selected_tab == 'Youtube Music':
     st.markdown('<h3 style="text-align:center;">Podsumowanie muzyczne - YouTube Music</h3>', unsafe_allow_html=True)
+
+
+
+
     
-    #WYKRES 1
-    # Przygotowanie danych do DataFrame
-    activity_counts_per_date = {}
+    # #WYKRES 1
+    # # Przygotowanie danych do DataFrame
+    # activity_counts_per_date = {}
 
-    for record in youtube_music_records:
-        timestamp = record['time']
-        date = pd.to_datetime(timestamp).date()   # Wybieramy tylko datę, pomijając godzinę, minutę i sekundę
+    # for record in youtube_music_records:
+    #     timestamp = record['time']
+    #     date = pd.to_datetime(timestamp).date()   # Wybieramy tylko datę, pomijając godzinę, minutę i sekundę
         
-        if date in activity_counts_per_date:
-            activity_counts_per_date[date] += 1
-        else:
-            activity_counts_per_date[date] = 1
+    #     if date in activity_counts_per_date:
+    #         activity_counts_per_date[date] += 1
+    #     else:
+    #         activity_counts_per_date[date] = 1
 
-    data = {'Date': list(activity_counts_per_date.keys()), 'ActivityCount': list(activity_counts_per_date.values())}
-    df = pd.DataFrame(data)
+    # data = {'Date': list(activity_counts_per_date.keys()), 'ActivityCount': list(activity_counts_per_date.values())}
+    # df = pd.DataFrame(data)
 
-    #Wykres
+    # #Wykres
+    # st.markdown('<h3 style="font-size: 20px;">Filtr daty</h3>', unsafe_allow_html=True)
+
+    # col1, col2 = st.columns(2)  # Tworzenie dwóch kolumn
+
+    # with col1:
+    #     start_date = st.date_input('Wybierz datę początkową', df['Date'].min())
+
+    # with col2:
+    #     end_date = st.date_input('Wybierz datę końcową', df['Date'].max())
+
+    # filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+
+    # fig = px.line(filtered_df, x='Date', y='ActivityCount', title='Aktywność na YouTube Music w czasie',
+    #             labels={'Date': 'Data', 'ActivityCount': 'Liczba odsłuchanych utworów'}, color_discrete_sequence=['red'])
+
+    # # Wyświetlenie interaktywnego wykresu
+    # st.plotly_chart(fig, use_container_width=True)
+
+
+    @st.cache_data
+    def prepare_activity_data(records):
+        activity_counts_per_date = {}
+    
+        for record in records:
+            timestamp = record['time']
+            date = pd.to_datetime(timestamp).date()   # Wybieramy tylko datę, pomijając godzinę, minutę i sekundę
+    
+            if date in activity_counts_per_date:
+                activity_counts_per_date[date] += 1
+            else:
+                activity_counts_per_date[date] = 1
+    
+        data = {'Date': list(activity_counts_per_date.keys()), 'ActivityCount': list(activity_counts_per_date.values())}
+        df = pd.DataFrame(data)
+        return df
+    
+    # Wywołanie funkcji i przypisanie wyniku do zmiennej
+    df_activity_cached = prepare_activity_data(youtube_music_records)
+    
     st.markdown('<h3 style="font-size: 20px;">Filtr daty</h3>', unsafe_allow_html=True)
-
+    
     col1, col2 = st.columns(2)  # Tworzenie dwóch kolumn
-
+    
     with col1:
-        start_date = st.date_input('Wybierz datę początkową', df['Date'].min())
-
+        start_date = st.date_input('Wybierz datę początkową', df_activity_cached['Date'].min())
+    
     with col2:
-        end_date = st.date_input('Wybierz datę końcową', df['Date'].max())
-
-    filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
-
+        end_date = st.date_input('Wybierz datę końcową', df_activity_cached['Date'].max())
+    
+    filtered_df = df_activity_cached[(df_activity_cached['Date'] >= start_date) & (df_activity_cached['Date'] <= end_date)]
+    
     fig = px.line(filtered_df, x='Date', y='ActivityCount', title='Aktywność na YouTube Music w czasie',
                 labels={'Date': 'Data', 'ActivityCount': 'Liczba odsłuchanych utworów'}, color_discrete_sequence=['red'])
-
+    
     # Wyświetlenie interaktywnego wykresu
     st.plotly_chart(fig, use_container_width=True)
 
@@ -308,6 +351,8 @@ elif selected_tab == 'Youtube Music':
 
 
 
+
+    
 
 
 
