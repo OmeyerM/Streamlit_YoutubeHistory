@@ -337,78 +337,143 @@ elif selected_tab == 'Youtube Music':
     st.plotly_chart(fig_artists, use_container_width=True)
 
 
-    #WYKRES 3 - UTWORY
-    for record in youtube_music_records:
-        title = record['title']
+    # #WYKRES 3 - UTWORY
+    # for record in youtube_music_records:
+    #     title = record['title']
 
-        # Sprawdzenie, czy pole 'subtitles' istnieje w rekordzie
-        if 'subtitles' in record and record['subtitles']:
-            subtitle = record['subtitles'][0]['name']  # Wybieramy nazwę wykonawcy z danych
-            # Usunięcie 'VEVO' z końca nazwy wykonawcy
-            subtitle = subtitle.replace('VEVO', '').strip()
-            # Zmiana 'AmeliaMoore' na 'Amelia Moore'
-            subtitle = subtitle.replace('AmeliaMoore', 'Amelia Moore')
-            record['subtitles'][0]['name'] = subtitle  # Aktualizacja nazwy wykonawcy w rekordzie
-        else:
-            subtitle = 'Nieznany wykonawca'
+    #     # Sprawdzenie, czy pole 'subtitles' istnieje w rekordzie
+    #     if 'subtitles' in record and record['subtitles']:
+    #         subtitle = record['subtitles'][0]['name']  # Wybieramy nazwę wykonawcy z danych
+    #         # Usunięcie 'VEVO' z końca nazwy wykonawcy
+    #         subtitle = subtitle.replace('VEVO', '').strip()
+    #         # Zmiana 'AmeliaMoore' na 'Amelia Moore'
+    #         subtitle = subtitle.replace('AmeliaMoore', 'Amelia Moore')
+    #         record['subtitles'][0]['name'] = subtitle  # Aktualizacja nazwy wykonawcy w rekordzie
+    #     else:
+    #         subtitle = 'Nieznany wykonawca'
 
-        # Pobranie tylko części tekstu po ostatnim myślniku w tytule
-        if '-' in title:
-            title = title.rsplit('-', 1)[-1].strip()
+    #     # Pobranie tylko części tekstu po ostatnim myślniku w tytule
+    #     if '-' in title:
+    #         title = title.rsplit('-', 1)[-1].strip()
 
-        # Usunięcie tekstu w nawiasach na końcu tytułu
-        if '(' in title and ')' in title:
-            title = title.rsplit('(', 1)[0].strip()
+    #     # Usunięcie tekstu w nawiasach na końcu tytułu
+    #     if '(' in title and ')' in title:
+    #         title = title.rsplit('(', 1)[0].strip()
         
-        record['title'] = title
+    #     record['title'] = title
 
 
-    # Przygotowanie danych do analizy
-    song_counts = Counter()
+    # # Przygotowanie danych do analizy
+    # song_counts = Counter()
 
-    for record in youtube_music_records:
-        title = record['title']
+    # for record in youtube_music_records:
+    #     title = record['title']
 
-        # Sprawdzenie, czy pole 'subtitles' istnieje w rekordzie
-        if 'subtitles' in record and record['subtitles']:
-            subtitle = record['subtitles'][0]['name']  # Wybieramy nazwę wykonawcy z danych
-        else:
-            subtitle = 'Nieznany wykonawca'
+    #     # Sprawdzenie, czy pole 'subtitles' istnieje w rekordzie
+    #     if 'subtitles' in record and record['subtitles']:
+    #         subtitle = record['subtitles'][0]['name']  # Wybieramy nazwę wykonawcy z danych
+    #     else:
+    #         subtitle = 'Nieznany wykonawca'
 
-        song_counts[(title, subtitle)] += 1
+    #     song_counts[(title, subtitle)] += 1
 
-    # Konwersja na DataFrame
-    data = {'Title': [], 'Subtitle': [], 'Count': []}
+    # # Konwersja na DataFrame
+    # data = {'Title': [], 'Subtitle': [], 'Count': []}
 
-    for (title, subtitle), count in song_counts.items():
-        data['Title'].append(title)
-        data['Subtitle'].append(subtitle)
-        data['Count'].append(count)
+    # for (title, subtitle), count in song_counts.items():
+    #     data['Title'].append(title)
+    #     data['Subtitle'].append(subtitle)
+    #     data['Count'].append(count)
 
-    df_songs = pd.DataFrame(data)
+    # df_songs = pd.DataFrame(data)
 
+    # # Wybór ilości utworów do uwzględnienia
+    # num_songs = st.slider('Wybierz ilość utworów', min_value=5, max_value=20, value=10)
+
+    # # Sortowanie utworów według liczby odsłuchań
+    # sorted_df = df_songs.sort_values(by='Count', ascending=False).head(num_songs)
+
+    # # Tworzenie wykresu
+    # fig = px.bar(sorted_df, x='Count', y='Title', orientation='h',
+    #             title=f'Top {num_songs} utworów z największą liczbą odsłuchań',
+    #             labels={'Count': 'Liczba odsłuchań', 'Title': 'Tytuł utworu'}, color_discrete_sequence=['red'])
+
+    # # Dodanie informacji o wykonawcy do etykiet na osi Y
+    # fig.update_yaxes(ticktext=[f'{subtitle} - {title}' for subtitle, title  in zip(sorted_df['Subtitle'], sorted_df['Title'])],
+    #                 tickvals=sorted_df['Title'])
+
+    # fig.update_layout(yaxis_tickfont=dict(size=10))
+
+
+    # # Wyświetlenie interaktywnego wykresu
+    # st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+    @st.cache_data
+    def prepare_song_data(records):
+        # Przygotowanie danych do analizy
+        song_counts = Counter()
+    
+        for record in records:
+            title = record['title']
+    
+            # Sprawdzenie, czy pole 'subtitles' istnieje w rekordzie
+            if 'subtitles' in record and record['subtitles']:
+                subtitle = record['subtitles'][0]['name']  # Wybieramy nazwę wykonawcy z danych
+            else:
+                subtitle = 'Nieznany wykonawca'
+    
+            song_counts[(title, subtitle)] += 1
+    
+        # Konwersja na DataFrame
+        data = {'Title': [], 'Subtitle': [], 'Count': []}
+    
+        for (title, subtitle), count in song_counts.items():
+            data['Title'].append(title)
+            data['Subtitle'].append(subtitle)
+            data['Count'].append(count)
+    
+        df_songs = pd.DataFrame(data)
+        return df_songs
+    
+    # Wywołanie funkcji i przypisanie wyniku do zmiennej
+    df_songs_cached = prepare_song_data(youtube_music_records)
+    
     # Wybór ilości utworów do uwzględnienia
     num_songs = st.slider('Wybierz ilość utworów', min_value=5, max_value=20, value=10)
-
+    
     # Sortowanie utworów według liczby odsłuchań
-    sorted_df = df_songs.sort_values(by='Count', ascending=False).head(num_songs)
-
+    sorted_df = df_songs_cached.sort_values(by='Count', ascending=False).head(num_songs)
+    
     # Tworzenie wykresu
     fig = px.bar(sorted_df, x='Count', y='Title', orientation='h',
                 title=f'Top {num_songs} utworów z największą liczbą odsłuchań',
                 labels={'Count': 'Liczba odsłuchań', 'Title': 'Tytuł utworu'}, color_discrete_sequence=['red'])
-
+    
     # Dodanie informacji o wykonawcy do etykiet na osi Y
     fig.update_yaxes(ticktext=[f'{subtitle} - {title}' for subtitle, title  in zip(sorted_df['Subtitle'], sorted_df['Title'])],
                     tickvals=sorted_df['Title'])
-
+    
     fig.update_layout(yaxis_tickfont=dict(size=10))
-
-
+    
     # Wyświetlenie interaktywnego wykresu
     st.plotly_chart(fig, use_container_width=True)
 
 
+
+
+
+
+
+
+
+
+
+
+
+    
     # #WYKRES 4
     # # Przygotowanie danych do analizy
     # hour_counts = np.zeros(24)
