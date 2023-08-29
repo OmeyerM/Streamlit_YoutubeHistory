@@ -35,21 +35,16 @@ st.set_page_config(
 # with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
 #     youtube_music_records = json.load(file)
 
-@st.cache_resource('youtube_records.json')
-def load_youtube_records():
-    with open('youtube_records.json', 'r', encoding='utf-8') as file:
-        youtube_records = json.load(file)
-    return youtube_records
+# Load the data from JSON and use Python's caching mechanism
+@st.cache
+def load_data(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    return data
 
-@st.cache_resource('youtube_music_records.json')
-def load_youtube_music_records():
-    with open('youtube_music_records.json', 'r', encoding='utf-8') as file:
-        youtube_music_records = json.load(file)
-    return youtube_music_records
-
-# Load data using new caching commands
-youtube_records = load_youtube_records()
-youtube_music_records = load_youtube_music_records()
+# Load the data using the caching function
+youtube_records = load_data('youtube_records.json')
+youtube_music_records = load_data('youtube_music_records.json')
 
 
 # Styl dla wyśrodkowanego tekstu
