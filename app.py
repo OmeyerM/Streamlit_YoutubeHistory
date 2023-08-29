@@ -246,7 +246,7 @@ if selected_tab == 'Youtube':
     # Wyświetl animowany wykres HTML za pomocą komponentu st.components.v1.html
     st.markdown('<h3>Top 10 Channels Over Time</h3>', unsafe_allow_html=True)
     html_file = open('top_channels_animation.html', 'r', encoding='utf-8').read()
-    st.components.v1.html(html_file)
+    st.components.v1.html(html_file, height=600, width=1300)
 
 
 ##########################################################################################################
