@@ -243,11 +243,17 @@ if selected_tab == 'Youtube':
     
         st.pyplot(plt.gcf())
 
-    # Wyświetl animowany wykres HTML za pomocą komponentu st.components.v1.html
-    st.markdown('<h3>Top 10 Channels Over Time</h3>', unsafe_allow_html=True)
-    html_file = open('top_channels_animation.html', 'r', encoding='utf-8').read()
-    st.components.v1.html(html_file, use_container_width=True) #width=1300, height=600)
+    # # Wyświetl animowany wykres HTML za pomocą komponentu st.components.v1.html
+    # st.markdown('<h3>Top 10 Channels Over Time</h3>', unsafe_allow_html=True)
+    # html_file = open('top_channels_animation.html', 'r', encoding='utf-8').read()
+    # st.components.v1.html(html_file, use_container_width=True) #width=1300, height=600)
 
+    # Wczytaj zawartość pliku HTML
+    html_file_content = open('top_channels_animation.html', 'r', encoding='utf-8').read()
+    
+    # Wyświetl animowany wykres HTML
+    st.markdown('<h3>Top 10 Channels Over Time</h3>', unsafe_allow_html=True)
+    st.markdown(html_file_content, unsafe_allow_html=True)
 
 
 
