@@ -191,43 +191,94 @@ if selected_tab == 'Youtube':
         
         st.pyplot(plt.gcf())
 
-    #SEKCJA 3
-    month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
-    filter_month_name = st.selectbox('# Wybierz miesiąc', month_names)
-    col5, col6 = st.columns(2)  
+
+
+
+
+
     
-    with col5:
-        # Przygotowanie danych
-        hour_counts = Counter((record['month'], record['hour']) for record in youtube_records)
+    # #SEKCJA 3
+    # month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
+    # filter_month_name = st.selectbox('# Wybierz miesiąc', month_names)
+    # col5, col6 = st.columns(2)  
+    
+    # with col5:
+    #     # Przygotowanie danych
+    #     hour_counts = Counter((record['month'], record['hour']) for record in youtube_records)
         
-        #month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
+    #     #month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
+    #     filter_month = month_names.index(filter_month_name) + 1
+    #     filtered_hour_counts = {hour: count for (month, hour), count in hour_counts.items() if month == filter_month}
+    #     hours = list(range(24))
+    #     counts = [filtered_hour_counts.get(hour, 0) for hour in hours]
+    
+    #     fig, ax = plt.subplots(figsize=(10, 5))
+    #     ax.bar(hours, counts, color=(1, 0, 0, 0.8))
+    #     ax.set_xlabel('Godzina')
+    #     ax.set_ylabel('Ilość filmów')
+    #     ax.set_title(f'Ilość obejrzanych filmów na platformie YouTube w poszczególnych godzinach dla miesiąca {filter_month_name}')
+    #     ax.set_xticks(hours)
+    
+    #     st.pyplot(fig)
+    
+    # with col6:
+    #     # Przetwarzanie danych
+    #     day_of_week_counts = Counter()
+    
+    #     for record in youtube_records:
+    #         # Konwertowanie daty i czasu z formatu "YYYY-MM-DD HH:MM:SS"
+    #         datetime_str = record['time']
+    #         datetime_obj = datetime.datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+            
+    #         # Filtrowanie danych tylko dla wybranego miesiąca
+    #         if datetime_obj.month == month_names.index(filter_month_name) + 1:
+    #             day_name = datetime_obj.strftime('%A')
+                
+    #             day_of_week_counts[day_name] += 1
+    
+    #     days_of_week = list(day_of_week_counts.keys())
+    #     view_counts = list(day_of_week_counts.values())
+    
+    #     data = pd.DataFrame({'Dzień tygodnia': days_of_week, 'Ilość filmów': view_counts})
+    
+    #     order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    
+    #     data['Dzień tygodnia'] = pd.Categorical(data['Dzień tygodnia'], categories=order, ordered=True)
+    
+    #     data = data.sort_values('Dzień tygodnia')
+    
+    #     filter_month = month_names.index(filter_month_name) + 1
+    
+    #     #Tworzenie wykresu
+    #     plt.figure(figsize=(10, 5.55))
+    #     plt.bar(data['Dzień tygodnia'], data['Ilość filmów'], color=(1, 0, 0, 0.8))
+    #     plt.xlabel('Dzień tygodnia')
+    #     plt.ylabel('Ilość filmów')
+    #     plt.title(f'Ilość obejrzanych filmów na platformie YouTube w poszczególne dni tygodnia dla miesiąca {filter_month_name}')
+    #     plt.xticks(rotation=45)  
+    #     plt.tight_layout() 
+    
+    #     st.pyplot(plt.gcf())
+
+    @st.cache_data
+    def prepare_hourly_counts(youtube_records, month_names, filter_month_name):
+        hour_counts = Counter((record['month'], record['hour']) for record in youtube_records)
         filter_month = month_names.index(filter_month_name) + 1
         filtered_hour_counts = {hour: count for (month, hour), count in hour_counts.items() if month == filter_month}
         hours = list(range(24))
         counts = [filtered_hour_counts.get(hour, 0) for hour in hours]
+        return hours, counts
     
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.bar(hours, counts, color=(1, 0, 0, 0.8))
-        ax.set_xlabel('Godzina')
-        ax.set_ylabel('Ilość filmów')
-        ax.set_title(f'Ilość obejrzanych filmów na platformie YouTube w poszczególnych godzinach dla miesiąca {filter_month_name}')
-        ax.set_xticks(hours)
-    
-        st.pyplot(fig)
-    
-    with col6:
-        # Przetwarzanie danych
+    @st.cache_data
+    def prepare_day_of_week_counts(youtube_records, month_names, filter_month_name):
         day_of_week_counts = Counter()
     
         for record in youtube_records:
-            # Konwertowanie daty i czasu z formatu "YYYY-MM-DD HH:MM:SS"
             datetime_str = record['time']
             datetime_obj = datetime.datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
-            
-            # Filtrowanie danych tylko dla wybranego miesiąca
+    
             if datetime_obj.month == month_names.index(filter_month_name) + 1:
                 day_name = datetime_obj.strftime('%A')
-                
                 day_of_week_counts[day_name] += 1
     
         days_of_week = list(day_of_week_counts.keys())
@@ -240,17 +291,36 @@ if selected_tab == 'Youtube':
         data['Dzień tygodnia'] = pd.Categorical(data['Dzień tygodnia'], categories=order, ordered=True)
     
         data = data.sort_values('Dzień tygodnia')
+        
+        return data
     
-        filter_month = month_names.index(filter_month_name) + 1
+    month_names = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
+    filter_month_name = st.selectbox('# Wybierz miesiąc', month_names)
     
-        #Tworzenie wykresu
+    col5, col6 = st.columns(2)
+    
+    with col5:
+        hours, counts = prepare_hourly_counts(youtube_records, month_names, filter_month_name)
+        
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.bar(hours, counts, color=(1, 0, 0, 0.8))
+        ax.set_xlabel('Godzina')
+        ax.set_ylabel('Ilość filmów')
+        ax.set_title(f'Ilość obejrzanych filmów na platformie YouTube w poszczególnych godzinach dla miesiąca {filter_month_name}')
+        ax.set_xticks(hours)
+    
+        st.pyplot(fig)
+    
+    with col6:
+        data = prepare_day_of_week_counts(youtube_records, month_names, filter_month_name)
+        
         plt.figure(figsize=(10, 5.55))
         plt.bar(data['Dzień tygodnia'], data['Ilość filmów'], color=(1, 0, 0, 0.8))
         plt.xlabel('Dzień tygodnia')
         plt.ylabel('Ilość filmów')
         plt.title(f'Ilość obejrzanych filmów na platformie YouTube w poszczególne dni tygodnia dla miesiąca {filter_month_name}')
-        plt.xticks(rotation=45)  
-        plt.tight_layout() 
+        plt.xticks(rotation=45)
+        plt.tight_layout()
     
         st.pyplot(plt.gcf())
 
@@ -258,6 +328,10 @@ if selected_tab == 'Youtube':
 
 
 
+
+
+
+    
 
 
 
